@@ -1,0 +1,21 @@
+:: INSTRUCTIONS
+:: Find the "EDIT" lines and change them according to your requirements and organization. Some lines
+:: are not appropriate for large companies using Active Directory infrastructure, others are fine for small organizations, 
+:: others are fine for individual users. At the start of tricky lines, I've added guidelines. 
+:: It is a good idea to create a System Restore point before you run the script - as there are more than 920 lines in it,
+:: finding out which line broke your machine is going to be trickly. You can also run the script in sequences manually the 
+:: first few times, reboot, test your software and connectivity, proceed with the next sequence - this helps with troubleshooting.
+:: HOW TO RUN THE SCRIPT
+:: The command below creates the restore point, you can do it manually, too. 
+powershell.exe enable-computerrestore -drive c:\
+powershell.exe vssadmin resize shadowstorage /on=c: /for=c: /maxsize=5000MB
+:: checkpoint-computer -description "beforehardening"
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore" /v SystemRestorePointCreationFrequency /t REG_DWORD /d 20 /f
+powershell.exe -ExecutionPolicy Bypass -Command "Checkpoint-Computer -Description 'BeforeSecurityHardening' -RestorePointType 'MODIFY_SETTINGS'"
+:: 1. In Settings, search for Restore, then choose Create a restore point, then in System Protection, make sure it is On and has at least 6% of the drive.  
+:: Create a Restore point, name it "Prior Security Hardening" 
+:: 2. Go to https://raw.githubusercontent.com/atlantsecurity/windows-hardening-scripts/main/Windows-10-Hardening-script.cmd and download the cmd script to Downloads. 
+:: It will download it as .txt - go to View in folder options, enable file extensions, change the filename to .cmd.  
+:: 3. Open Powershell as Administrator, then type cd ~, then type cd .\Downloads\, type ls, type cmd 
+:: 4. Type "Windows-10-Hardening-script.cmd"
+:: 5. If you experience problems and need to roll back, roll back using the system restore point you created.
